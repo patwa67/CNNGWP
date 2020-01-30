@@ -74,18 +74,17 @@ cnngwp<-function(filter,kernel,lambda) {
   #Min MSE from validation (test) data
   MSEmin <- min(history$metrics$val_mean_squared_error)
   
-  #Another way to get min MSE
+  #Negative MSEmin as test score for Bayesian optimization
+  list(Score=-MSEmin,Pred = 0)
+  
+  #Prediction of yhat based on the best model
   #mods<-list.files(checkpoint_dir)
   #bestmod<-mods[length(mods)]
   #model %>% load_model_weights_hdf5(
   #  file.path(checkpoint_dir, bestmod)
   #)
-  #predmod <-predict(model,Xtest)
-  #MSEmin <- sum((predmod-ytest)^2)/length(ytest)
-  
-  #Negative MSEmin as test score for Bayesian optimization
-  list(Score=-MSEmin,Pred = 0)
-
+  #yhat <-predict(model,Xtest)
+  #return(yhat)
 }
 
 
@@ -105,4 +104,25 @@ OPT_Res_BO <- BayesianOptimization(cnngwp,
                                    verbose = TRUE)
 
 
+# Parallel version that should be used with care since the checkpoint directories can be mixed up. It is better to use 
+# a dedicated cluster a make sure to use unique checkpoint directories.
 
+#library(doParallel)
+#numCores <- detectCores()
+#cl <- makeCluster(numCores)
+#clusterExport(cl,c("Xtrain","Xtest","ytrain","ytest"))
+#clusterEvalQ(cl,require(keras))
+#clusterEvalQ(cl,require(rBayesianOptimization))
+#registerDoParallel(cl)
+#OPT_Res_BO_Par <- foreach(k = 1:numCores) %dopar% {
+#  BayesianOptimization(cnngwp,
+#                      bounds = list(filter = c(20L,100L),
+#                                    kernel = c(10L,50L),
+#                                    lambda = c(0.1,1.0)),
+#                      init_grid_dt = NULL,
+#                      init_points = 15,
+#                      n_iter = 25,
+#                      acq = "ucb", kappa = 2.576, eps = 0.0,
+#                      verbose = TRUE)
+#}
+#stopCluster(cl)
