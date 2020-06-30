@@ -72,8 +72,8 @@ cnngwp<-function(filter,kernel,lambda) {
   )
   
   #Min MSE from validation (test) data
-  MSEmin <- min(history$metrics$val_mean_squared_error)
-  
+  #MSEmin <- min(history$metrics$val_mean_squared_error)
+  MSEmin <- min(history$metrics$val_mse)
   #Negative MSEmin as test score for Bayesian optimization
   list(Score=-MSEmin,Pred = 0)
   
