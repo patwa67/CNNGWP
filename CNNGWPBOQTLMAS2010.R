@@ -27,7 +27,7 @@ cnngwp<-function(filter,kernel,lambda) {
   #Create checkpoint callback
   cp_callback <- callback_model_checkpoint(
     filepath = filepath,
-    monitor = "val_mean_squared_error",
+    monitor = "val_mse",
     save_weights_only = TRUE,
     save_best_only = TRUE,
     verbose = 0
